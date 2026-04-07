@@ -1,0 +1,66 @@
+class BankAccount:
+    def __init__(self, acc_num, holder, initial_balance=0.0):
+        # Double underscore invokes name mangling for true private attributes
+        self.__account_number = acc_num
+        self.__account_holder = holder
+        self.__balance = float(initial_balance)
+        self.history = []
+        self._log_transaction(f"Account opened with balance: {self.__balance}")
+
+    @property
+    def account_number(self):
+        """Read-only property for account number."""
+        return self.__account_number
+
+    @property
+    def balance(self):
+        return self.__balance
+
+    @balance.setter
+    def balance(self, value):
+        if value < 0:
+            raise ValueError("Balance cannot be negative.")
+        self.__balance = value
+
+    def deposit(self, amount):
+        if amount <= 0:
+            print("Deposit must be a positive value.")
+            return
+        self.__balance += amount
+        self._log_transaction(f"Deposited: {amount}")
+
+    def withdraw(self, amount):
+        if amount > self.__balance:
+            print(f"Insufficient funds. Current balance: {self.__balance}")
+        elif amount <= 0:
+            print("Withdrawal amount must be positive.")
+        else:
+            self.__balance -= amount
+            self._log_transaction(f"Withdrew: {amount}")
+
+    def _log_transaction(self, note):
+        self.history.append(note)
+
+    def display_account_info(self):
+        print(f"\n--- Account Details ---")
+        print(f"Holder: {self.__account_holder}")
+        print(f"Number: {self.__account_number}")
+        print(f"Balance: ${self.__balance:,.2f}")
+
+class SavingsAccount(BankAccount):
+    def __init__(self, acc_num, holder, initial_balance, interest_rate=0.02):
+        super().__init__(acc_num, holder, initial_balance)
+        self.interest_rate = interest_rate
+
+    def apply_interest(self):
+        interest = self.balance * self.interest_rate
+        self.deposit(interest)
+        print(f"Interest of ${interest:.2f} applied.")
+
+# Example usage for testing
+if __name__ == "__main__":
+    my_acc = SavingsAccount("AIIM-00516", "Elsie Idaya", 1000)
+    my_acc.deposit(500)
+    my_acc.withdraw(200)
+    my_acc.apply_interest()
+    my_acc.display_account_info()# Bank-Management--oop
